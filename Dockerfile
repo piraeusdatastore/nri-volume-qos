@@ -1,10 +1,12 @@
-FROM golang:1 AS builder
+FROM --platform=$BUILDPLATFORM golang:1 AS builder
 ARG VERSION=0.0.0-dev
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build \
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-X github.com/piraeusdatastore/nri-volume-qos/pkg/metadata.Version=${VERSION}" \
     -o /nri-volume-qos \
     ./cmd/nri-volume-qos
