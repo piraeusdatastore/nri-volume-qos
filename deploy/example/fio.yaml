@@ -1,0 +1,165 @@
+# fio.yaml — demonstrates nri-volume-qos IO limit enforcement on both
+# filesystem and raw block CSI volumes.
+#
+# Assumes the LINSTOR CSI driver is already publishing qos.linbit.com/*
+# metadata in ControllerPublishVolume for volumes backed by the "linstor-ssd"
+# StorageClass.
+#
+# Four PVCs are created:
+#   vol-fs-limited      filesystem volume with QoS limits
+#   vol-fs-unlimited    filesystem volume without QoS limits
+#   vol-block-limited   raw block volume with QoS limits
+#   vol-block-unlimited raw block volume without QoS limits
+#
+# A single Pod mounts all four and runs parallel fio jobs so throughput
+# differences are visible in one report.
+#
+# EXPECTED RESULT
+# ───────────────
+# The "limited" jobs should be capped at ~40 MiB/s read / ~20 MiB/s write
+# bandwidth and ~400 RIOPS / ~200 WIOPS; the "unlimited" jobs should run at
+# full device speed.
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: linstor-ssd
+provisioner: linstor.csi.linbit.com
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  linstor.csi.linbit.com/placementCount: "2"
+---
+# linstor-ssd-qos adds QoS limit parameters that the LINSTOR CSI driver
+# includes in its ControllerPublishVolume publish_context, which Kubernetes
+# stores in VolumeAttachment.status.attachmentMetadata for nri-volume-qos to read.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: linstor-ssd-qos
+provisioner: linstor.csi.linbit.com
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  linstor.csi.linbit.com/placementCount: "2"
+  qos.linbit.com/rbps: "40Mi"
+  qos.linbit.com/wbps: "20Mi"
+  qos.linbit.com/riops: "400"
+  qos.linbit.com/wiops: "200"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vol-fs-limited
+spec:
+  storageClassName: linstor-ssd-qos
+  accessModes: [ ReadWriteOnce ]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vol-fs-unlimited
+spec:
+  storageClassName: linstor-ssd
+  accessModes: [ ReadWriteOnce ]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vol-block-limited
+spec:
+  storageClassName: linstor-ssd-qos
+  volumeMode: Block
+  accessModes: [ ReadWriteOnce ]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vol-block-unlimited
+spec:
+  storageClassName: linstor-ssd
+  volumeMode: Block
+  accessModes: [ ReadWriteOnce ]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-qos-test
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fio
+        image: nixery.dev/fio
+        command:
+        - fio
+        - --output-format=normal
+        - --ioengine=libaio
+        - --name=fs-limited
+        - --filename=/mnt/fs-limited/test.dat
+        - --size=512m
+        - --bs=128k
+        - --rw=randrw
+        - --iodepth=8
+        - --runtime=30
+        - --time_based
+        - --name=fs-unlimited
+        - --filename=/mnt/fs-unlimited/test.dat
+        - --size=512m
+        - --bs=128k
+        - --rw=randrw
+        - --iodepth=8
+        - --runtime=30
+        - --time_based
+        - --name=block-limited
+        - --filename=/dev/block-limited
+        - --direct=1
+        - --bs=128k
+        - --rw=randrw
+        - --iodepth=8
+        - --runtime=30
+        - --time_based
+        - --name=block-unlimited
+        - --filename=/dev/block-unlimited
+        - --direct=1
+        - --bs=128k
+        - --rw=randrw
+        - --iodepth=8
+        - --runtime=30
+        - --time_based
+        volumeMounts:
+        - name: fs-limited
+          mountPath: /mnt/fs-limited
+        - name: fs-unlimited
+          mountPath: /mnt/fs-unlimited
+        volumeDevices:
+        - name: block-limited
+          devicePath: /dev/block-limited
+        - name: block-unlimited
+          devicePath: /dev/block-unlimited
+      volumes:
+      - name: fs-limited
+        persistentVolumeClaim:
+          claimName: vol-fs-limited
+      - name: fs-unlimited
+        persistentVolumeClaim:
+          claimName: vol-fs-unlimited
+      - name: block-limited
+        persistentVolumeClaim:
+          claimName: vol-block-limited
+      - name: block-unlimited
+        persistentVolumeClaim:
+          claimName: vol-block-unlimited
