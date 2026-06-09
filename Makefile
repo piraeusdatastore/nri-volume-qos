@@ -7,7 +7,7 @@ NOCACHE  ?= false
 
 .PHONY: help
 help:
-	@echo "Targets: build, image, push, test, vet"
+	@echo "Targets: build, image, push, test, vet, release"
 
 .PHONY: build
 build:
@@ -37,3 +37,16 @@ image:
 .PHONY: push
 push:
 	$(MAKE) image _EXTRA_ARGS=--push
+
+.PHONY: manifest.yaml
+manifest.yaml:
+	sed 's|$(REGISTRY)/$(PROJECT):latest|$(REGISTRY)/$(PROJECT):$(VERSION)|' deploy/daemonset.yaml > $@
+
+.PHONY: changes.md
+changes.md:
+	tools/extract-changelog.sh $(VERSION:v%=%) > $@
+
+# Roll [Unreleased] into a dated release section, commit, and tag. Run as: make release VERSION=1.2.3
+.PHONY: release
+release:
+	tools/make-release.sh $(VERSION)

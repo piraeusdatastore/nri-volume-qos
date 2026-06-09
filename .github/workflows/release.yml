@@ -1,0 +1,21 @@
+name: release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  create-draft-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build release resources
+        run: make manifest.yaml changes.md VERSION="${GITHUB_REF_NAME}"
+      - uses: softprops/action-gh-release@v3
+        with:
+          body_path: changes.md
+          draft: true
+          files: |
+            manifest.yaml
