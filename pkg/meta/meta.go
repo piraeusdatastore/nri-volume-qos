@@ -8,6 +8,8 @@
 package meta
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -67,38 +69,69 @@ func FromMap(m map[string]string) (Limits, bool) {
 	}
 	l := Limits{Device: device}
 	var found bool
-	if v, ok := parseUint(m[KeyRBPS]); ok {
+	if v, ok, _ := parseLimit(m[KeyRBPS]); ok {
 		l.RBPS = v
 		found = true
 	}
-	if v, ok := parseUint(m[KeyWBPS]); ok {
+	if v, ok, _ := parseLimit(m[KeyWBPS]); ok {
 		l.WBPS = v
 		found = true
 	}
-	if v, ok := parseUint(m[KeyRIOPS]); ok {
+	if v, ok, _ := parseLimit(m[KeyRIOPS]); ok {
 		l.RIOPS = v
 		found = true
 	}
-	if v, ok := parseUint(m[KeyWIOPS]); ok {
+	if v, ok, _ := parseLimit(m[KeyWIOPS]); ok {
 		l.WIOPS = v
 		found = true
 	}
 	return l, found
 }
 
-// parseUint accepts either a plain integer ("104857600") or a Kubernetes
-// quantity string ("100Mi", "1Gi", "500k") and returns the value in base units.
-func parseUint(s string) (uint64, bool) {
+// ParseLimits parses the qos.linbit.com/* IO limits from a parameter map, such
+// as a StorageClass's parameters. Unlike FromMap it is strict: a limit that is
+// present but cannot be parsed (or is negative) returns an error. The device
+// key is set per-node at publish time rather than in the StorageClass, so it is
+// ignored here; the returned Limits leaves Device empty for the caller to fill
+// in before calling ToMap. Values may be plain integers ("104857600") or
+// Kubernetes quantity strings ("100Mi", "1Gi", "500k").
+func ParseLimits(params map[string]string) (Limits, error) {
+	var l Limits
+
+	for _, f := range []struct {
+		key string
+		dst *uint64
+	}{
+		{KeyRBPS, &l.RBPS},
+		{KeyWBPS, &l.WBPS},
+		{KeyRIOPS, &l.RIOPS},
+		{KeyWIOPS, &l.WIOPS},
+	} {
+		v, _, err := parseLimit(params[f.key])
+		if err != nil {
+			return Limits{}, fmt.Errorf("invalid value %q for %s: %w", params[f.key], f.key, err)
+		}
+		*f.dst = v
+	}
+
+	return l, nil
+}
+
+// parseLimit parses a single qos.linbit.com limit value. ok reports whether a
+// usable value was present: an empty string yields (0, false, nil). A non-empty
+// value must be a non-negative integer or Kubernetes quantity string ("100Mi",
+// "1Gi", "500k"), otherwise (0, false, err) is returned.
+func parseLimit(s string) (uint64, bool, error) {
 	if s == "" {
-		return 0, false
+		return 0, false, nil
 	}
 	q, err := resource.ParseQuantity(strings.TrimSpace(s))
 	if err != nil {
-		return 0, false
+		return 0, false, err
 	}
 	v := q.Value()
 	if v < 0 {
-		return 0, false
+		return 0, false, errors.New("must not be negative")
 	}
-	return uint64(v), true
+	return uint64(v), true, nil
 }
