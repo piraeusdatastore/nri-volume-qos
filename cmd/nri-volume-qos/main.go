@@ -20,7 +20,7 @@ func newCommand() *cobra.Command {
 	var kubeconfig, nodeName, pluginName, pluginIdx, kubeletPodsDir, hostPrefixDir string
 
 	cmd := &cobra.Command{
-		Use:     "nri-io-qos",
+		Use:     "nri-volume-qos",
 		Short:   "NRI plugin that enforces per-volume IO limits via cgroupv2 io.max",
 		Version: metadata.Version,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -53,7 +53,7 @@ func newCommand() *cobra.Command {
 				return err
 			}
 
-			klog.InfoS("Starting nri-io-qos", "version", metadata.Version, "node", nodeName)
+			klog.InfoS("Starting nri-volume-qos", "version", metadata.Version, "node", nodeName)
 			return p.Run(ctx)
 		},
 	}
