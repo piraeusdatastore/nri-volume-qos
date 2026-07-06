@@ -1,0 +1,23 @@
+apiVersion: v2
+name: nri-volume-qos
+description: NRI plugin that enforces per-volume IO limits on Kubernetes containers via the cgroup v2 io.max interface
+type: application
+# version and appVersion are kept in lockstep with the release tag by
+# tools/make-release.sh; the image tag defaults to appVersion.
+version: 0.1.1
+appVersion: "v0.1.1"
+kubeVersion: ">=1.26.0-0"
+keywords:
+  - nri
+  - qos
+  - io
+  - cgroup
+  - csi
+  - storage
+  - daemonset
+home: https://github.com/piraeusdatastore/nri-volume-qos
+sources:
+  - https://github.com/piraeusdatastore/nri-volume-qos
+maintainers:
+  - name: Piraeus Datastore
+    url: https://piraeus.io

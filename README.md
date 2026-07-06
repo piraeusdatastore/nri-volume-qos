@@ -49,11 +49,31 @@ NRI support must be explicitly enabled in containerd. Add the following to `/etc
 
 ## Deployment
 
+### Helm
+
+Install the chart published to the GitHub Container Registry:
+
+```
+helm install nri-volume-qos oci://ghcr.io/piraeusdatastore/nri-volume-qos \
+  --version <X.Y.Z> --namespace kube-system
+```
+
+Or from a checkout of this repository:
+
+```
+helm install nri-volume-qos ./charts/nri-volume-qos --namespace kube-system
+```
+
+See [`charts/nri-volume-qos/README.md`](charts/nri-volume-qos/README.md) for the full list of values, including how to
+adjust the host kubelet directory for distributions that don't use `/var/lib/kubelet/pods`.
+
+### Plain manifest
+
 ```
 kubectl apply -f deploy/daemonset.yaml
 ```
 
-The manifest creates a `ServiceAccount`, `ClusterRole`, `ClusterRoleBinding`, and a `DaemonSet` in the `kube-system`
+Both methods create a `ServiceAccount`, `ClusterRole`, `ClusterRoleBinding`, and a `DaemonSet` in the `kube-system`
 namespace. The DaemonSet requires read access to `volumeattachments` and mounts three host paths:
 
 | Host path | Mount | Purpose |
