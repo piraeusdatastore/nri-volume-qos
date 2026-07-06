@@ -1,0 +1,100 @@
+# Default values for nri-volume-qos.
+
+image:
+  registry: quay.io
+  repository: piraeusdatastore/nri-volume-qos
+  # Image tag. Defaults to the chart's appVersion when left empty.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Secrets for pulling the image from a private registry.
+imagePullSecrets: []
+
+# Override the chart name / fully qualified resource name.
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Create a ServiceAccount for the DaemonSet.
+  create: true
+  # Name to use. Generated from the fullname template when empty.
+  name: ""
+  annotations: {}
+
+rbac:
+  # Create the ClusterRole and ClusterRoleBinding granting read access to
+  # VolumeAttachments. Disable if you manage RBAC out of band.
+  create: true
+
+# NRI plugin settings, passed to the binary as CLI flags.
+plugin:
+  # NRI plugin name registered on the runtime socket (--nri-plugin-name).
+  name: qos.linbit.com
+  # NRI plugin index; controls ordering relative to other NRI plugins
+  # (--nri-plugin-idx).
+  index: "90"
+
+# Host paths mounted into the DaemonSet. Override for distributions that place
+# the kubelet directory elsewhere (e.g. k0s, MicroK8s, OpenShift).
+hostPaths:
+  # Kubelet pods directory on the host. Mounted read-only at the same path in
+  # the container and passed to --kubelet-pods-dir.
+  kubeletPodsDir: /var/lib/kubelet/pods
+  # Host /dev. Mounted read-only to stat block devices for major:minor.
+  dev: /dev
+  # NRI socket directory exposed by the container runtime.
+  nriSocketDir: /var/run/nri
+
+# In-container prefix under which the host /dev is mounted (--host-prefix-dir).
+# The dev host path is mounted at "<hostPrefixDir>/dev".
+hostPrefixDir: /host
+
+# Extra CLI flags appended verbatim to the plugin command. Each entry must be a
+# flag the binary accepts, e.g. "--kubeconfig=/etc/kube/config".
+extraArgs: []
+
+# DaemonSet update strategy.
+updateStrategy:
+  type: RollingUpdate
+
+priorityClassName: system-node-critical
+
+# Extra pod tolerations. Left empty so the DaemonSet controller's default
+# tolerations apply (not-ready, unreachable, disk/memory/pid-pressure,
+# unschedulable). Add entries to also run on control-plane or custom-tainted
+# nodes.
+tolerations: []
+
+nodeSelector: {}
+
+affinity: {}
+
+resources: {}
+  # limits:
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 10m
+  #   memory: 64Mi
+
+# Pod-level security context.
+podSecurityContext: {}
+
+# Container security context. The plugin needs privileged access to read the
+# host kubelet directory and stat block devices under /dev.
+securityContext:
+  privileged: true
+
+podAnnotations: {}
+podLabels: {}
+
+# Extra labels/annotations applied to all rendered resources.
+commonLabels: {}
+
+# Extra environment variables for the plugin container.
+extraEnv: []
+  # - name: HTTPS_PROXY
+  #   value: http://proxy.example.com:3128
+
+# Extra volumes and volume mounts.
+extraVolumes: []
+extraVolumeMounts: []

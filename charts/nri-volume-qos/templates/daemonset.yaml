@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "nri-volume-qos.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "nri-volume-qos.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "nri-volume-qos.selectorLabels" . | nindent 6 }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nri-volume-qos.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "nri-volume-qos.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "nri-volume-qos.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - {{ printf "--nri-plugin-name=%s" .Values.plugin.name | quote }}
+            - {{ printf "--nri-plugin-idx=%v" .Values.plugin.index | quote }}
+            - {{ printf "--kubelet-pods-dir=%s" .Values.hostPaths.kubeletPodsDir | quote }}
+            - {{ printf "--host-prefix-dir=%s" .Values.hostPrefixDir | quote }}
+            {{- range .Values.extraArgs }}
+            - {{ . | quote }}
+            {{- end }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            # kubelet pod volume directory — lets us read vol_data.json to
+            # resolve the VolumeAttachment for each CSI mount
+            - name: kubelet-pods
+              mountPath: {{ .Values.hostPaths.kubeletPodsDir }}
+              readOnly: true
+            # host /dev — needed to stat block devices and resolve major:minor
+            - name: dev
+              mountPath: {{ printf "%s/dev" .Values.hostPrefixDir }}
+              readOnly: true
+            # NRI socket exposed by containerd / CRI-O
+            - name: nri-sock
+              mountPath: /var/run/nri
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: kubelet-pods
+          hostPath:
+            path: {{ .Values.hostPaths.kubeletPodsDir }}
+            type: Directory
+        - name: dev
+          hostPath:
+            path: {{ .Values.hostPaths.dev }}
+            type: Directory
+        - name: nri-sock
+          hostPath:
+            path: {{ .Values.hostPaths.nriSocketDir }}
+            type: DirectoryOrCreate
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}

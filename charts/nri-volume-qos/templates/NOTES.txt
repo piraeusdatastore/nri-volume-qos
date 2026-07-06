@@ -1,0 +1,25 @@
+nri-volume-qos {{ .Chart.AppVersion }} has been deployed as a DaemonSet in namespace "{{ .Release.Namespace }}".
+
+Watch the rollout:
+
+  kubectl -n {{ .Release.Namespace }} rollout status daemonset/{{ include "nri-volume-qos.fullname" . }}
+
+List the pods:
+
+  kubectl -n {{ .Release.Namespace }} get pods \
+    -l app.kubernetes.io/name={{ include "nri-volume-qos.name" . }},app.kubernetes.io/instance={{ .Release.Name }}
+
+Reminders:
+
+  * NRI must be enabled in the container runtime. For containerd, add to
+    /etc/containerd/config.toml:
+
+      [plugins."io.containerd.nri.v1.nri"]
+        disable = false
+
+  * IO limits are supplied by your CSI driver via qos.linbit.com/* keys in
+    VolumeAttachment.status.attachmentMetadata. This plugin only enforces them;
+    it does not compute limit values.
+
+  * If your kubelet directory is not {{ .Values.hostPaths.kubeletPodsDir }}, set
+    hostPaths.kubeletPodsDir to the correct path and upgrade.

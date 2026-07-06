@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Helm chart under `charts/nri-volume-qos` for deploying the plugin as a DaemonSet, with configurable image, host paths, RBAC, scheduling, and NRI plugin settings.
+
 ## [0.1.1] - 2026-06-09
 
 ## [0.1.0] - 2026-06-09
