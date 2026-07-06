@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Helm chart under `charts/nri-volume-qos` for deploying the plugin as a DaemonSet, with configurable image, host paths, RBAC, scheduling, and NRI plugin settings.
+- On each published release, the chart is packaged and pushed as an OCI artifact to `ghcr.io/piraeusdatastore/nri-volume-qos`.
 
 ### Changed
 
