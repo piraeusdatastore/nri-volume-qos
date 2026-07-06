@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "nri-volume-qos Helm values",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "global": {
+      "type": "object",
+      "description": "Values shared with subcharts. Unused by this chart."
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "pullPolicy"],
+      "properties": {
+        "registry": {
+          "type": "string",
+          "description": "Image registry. Set empty to omit."
+        },
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tag": {
+          "type": "string",
+          "description": "Image tag; defaults to the chart appVersion when empty."
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "Never", "IfNotPresent"]
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "nameOverride": { "type": "string" },
+    "fullnameOverride": { "type": "string" },
+    "serviceAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["create"],
+      "properties": {
+        "create": { "type": "boolean" },
+        "name": { "type": "string" },
+        "annotations": { "type": "object" }
+      }
+    },
+    "rbac": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["create"],
+      "properties": {
+        "create": { "type": "boolean" }
+      }
+    },
+    "plugin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "index"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "NRI plugin name (--nri-plugin-name)."
+        },
+        "index": {
+          "type": ["string", "integer"],
+          "description": "NRI plugin index (--nri-plugin-idx). Two-digit ordering value."
+        }
+      }
+    },
+    "hostPaths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kubeletPodsDir", "dev", "nriSocketDir"],
+      "properties": {
+        "kubeletPodsDir": {
+          "type": "string",
+          "pattern": "^/",
+          "description": "Absolute host path to the kubelet pods directory."
+        },
+        "dev": {
+          "type": "string",
+          "pattern": "^/",
+          "description": "Absolute host path to /dev."
+        },
+        "nriSocketDir": {
+          "type": "string",
+          "pattern": "^/",
+          "description": "Absolute host path to the NRI socket directory."
+        }
+      }
+    },
+    "hostPrefixDir": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "In-container prefix for the host /dev mount (--host-prefix-dir)."
+    },
+    "extraArgs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "updateStrategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["RollingUpdate", "OnDelete"]
+        },
+        "rollingUpdate": { "type": "object" }
+      }
+    },
+    "priorityClassName": { "type": "string" },
+    "tolerations": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "nodeSelector": { "type": "object" },
+    "affinity": { "type": "object" },
+    "resources": { "type": "object" },
+    "podSecurityContext": { "type": "object" },
+    "securityContext": { "type": "object" },
+    "podAnnotations": { "type": "object" },
+    "podLabels": { "type": "object" },
+    "commonLabels": { "type": "object" },
+    "extraEnv": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "extraVolumes": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "extraVolumeMounts": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  }
+}

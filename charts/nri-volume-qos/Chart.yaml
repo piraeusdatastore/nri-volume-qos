@@ -16,6 +16,7 @@ keywords:
   - storage
   - daemonset
 home: https://github.com/piraeusdatastore/nri-volume-qos
+icon: https://raw.githubusercontent.com/piraeusdatastore/piraeus/master/artwork/sandbox-artwork/icon/color.svg
 sources:
   - https://github.com/piraeusdatastore/nri-volume-qos
 maintainers:

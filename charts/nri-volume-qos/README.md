@@ -96,6 +96,10 @@ publishes the limit values as `qos.linbit.com/*` keys in
 | `extraVolumes` | `[]` | Extra volumes. |
 | `extraVolumeMounts` | `[]` | Extra volume mounts. |
 
+Values are validated against `values.schema.json` at install, upgrade, template,
+and lint time. Unknown keys, wrong types, and invalid enums (e.g. a bad
+`image.pullPolicy`) are rejected before anything is applied.
+
 ### Non-default kubelet directory
 
 On distributions that place the kubelet directory elsewhere, override the host
