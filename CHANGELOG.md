@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Helm chart under `charts/nri-volume-qos` for deploying the plugin as a DaemonSet, with configurable image, host paths, RBAC, scheduling, and NRI plugin settings.
 
+### Changed
+
+- `deploy/daemonset.yaml` no longer tolerates all taints; it now relies on the default DaemonSet tolerations, so it no longer schedules onto control-plane or custom-tainted nodes unless tolerations are added.
+
 ## [0.1.1] - 2026-06-09
 
 ## [0.1.0] - 2026-06-09
