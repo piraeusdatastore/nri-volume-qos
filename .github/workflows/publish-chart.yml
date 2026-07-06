@@ -1,0 +1,34 @@
+name: publish-chart
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-chart:
+    name: Publish Helm chart
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Log in to GitHub Container Registry
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: echo "${GHCR_TOKEN}" | helm registry login ghcr.io --username "${GHCR_USER}" --password-stdin
+      - name: Package and push chart
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          OWNER: ${{ github.repository_owner }}
+        # The release tag (vX.Y.Z) sets the image tag (app-version); the chart
+        # version is the same without the leading "v" to stay valid SemVer.
+        run: |
+          CHART_VERSION="${TAG#v}"
+          OWNER="${OWNER,,}"
+          helm lint charts/nri-volume-qos
+          helm package charts/nri-volume-qos \
+            --version "${CHART_VERSION}" \
+            --app-version "${TAG}"
+          helm push "nri-volume-qos-${CHART_VERSION}.tgz" "oci://ghcr.io/${OWNER}"

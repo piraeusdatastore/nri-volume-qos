@@ -5,6 +5,7 @@ die() {
 }
 
 REPO="https://github.com/piraeusdatastore/nri-volume-qos"
+CHART="charts/nri-volume-qos/Chart.yaml"
 
 VERSION="${1#v}"
 if [ -z "$VERSION" ]; then
@@ -41,8 +42,14 @@ sed -i "s|^## \[Unreleased\]\$|## [Unreleased]\n\n## [$VERSION] - $date_today|" 
 # point the Unreleased link at the new tag and add the release's own link
 sed -i "s|^\[Unreleased\]:.*|[Unreleased]: $REPO/compare/v$VERSION...HEAD\n[$VERSION]: $version_link|" CHANGELOG.md
 
+# keep the Helm chart version and appVersion in lockstep with the release
+sed -i \
+	-e "s|^version: .*|version: $VERSION|" \
+	-e "s|^appVersion: .*|appVersion: \"v$VERSION\"|" \
+	"$CHART"
+
 # commit and tag the release
-git commit --signoff -m "Release v$VERSION" CHANGELOG.md
+git commit --signoff -m "Release v$VERSION" CHANGELOG.md "$CHART"
 git tag -s -m "Release v$VERSION" "v$VERSION"
 
 echo
