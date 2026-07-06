@@ -4,8 +4,8 @@ description: NRI plugin that enforces per-volume IO limits on Kubernetes contain
 type: application
 # version and appVersion are kept in lockstep with the release tag by
 # tools/make-release.sh; the image tag defaults to appVersion.
-version: 0.1.2
-appVersion: "v0.1.2"
+version: 0.1.3
+appVersion: "v0.1.3"
 kubeVersion: ">=1.26.0-0"
 keywords:
   - nri
