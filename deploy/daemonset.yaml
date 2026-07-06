@@ -44,11 +44,6 @@ spec:
       serviceAccountName: nri-volume-qos
       hostPID: false
       priorityClassName: system-node-critical
-      tolerations:
-        - operator: Exists
-          effect: NoSchedule
-        - operator: Exists
-          effect: NoExecute
       containers:
         - name: nri-volume-qos
           image: quay.io/piraeusdatastore/nri-volume-qos:latest
