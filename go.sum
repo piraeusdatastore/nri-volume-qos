@@ -14,6 +14,8 @@ github.com/containerd/nri v0.12.1 h1:Nkp14W/mdhP0ze83ja/O437du6NQA33W5Y0O+ar3aKM
 github.com/containerd/nri v0.12.1/go.mod h1:TGAfPLH4a+qwbv0PxsefPiR+PobYecDj2aXMtz7GQcg=
 github.com/containerd/nri v0.12.2 h1:piA7h2QUm0m3+e994qWFPYwnoXXwAphwDc1Ydx1eWi4=
 github.com/containerd/nri v0.12.2/go.mod h1:o6Pz0I/iks9g2KlH3WdgvFtc9rB7k0aeoZCAH01xOGk=
+github.com/containerd/nri v0.12.3 h1:pVZwZCe0Z+d2WmScp51VTO3OmeuOZFoDGInX2n04e70=
+github.com/containerd/nri v0.12.3/go.mod h1:MrNpHL2YtNnf09t+D6NacWeN1kaHmy/YCm0+w4VHKL0=
 github.com/containerd/ttrpc v1.2.8 h1:xbVu6D4qF2jihdh9rDVOKqUMiFBQk6YctTdo1zk087Y=
 github.com/containerd/ttrpc v1.2.8/go.mod h1:wyZW2K79t4Hfcxl+GUvkZqRBzJlqFFvgEeeWXa42tyE=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
@@ -187,6 +189,8 @@ go.yaml.in/yaml/v2 v2.4.4 h1:tuyd0P+2Ont/d6e2rl3be67goVK4R6deVxCUX5vyPaQ=
 go.yaml.in/yaml/v2 v2.4.4/go.mod h1:gMZqIpDtDqOfM0uNfy0SkpRhvUryYH0Z6wdMYcacYXQ=
 go.yaml.in/yaml/v3 v3.0.4 h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
+go.yaml.in/yaml/v3 v3.0.5 h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=
+go.yaml.in/yaml/v3 v3.0.5/go.mod h1:HVTZu1O7/Vkt2N+BFy8Zza+lnLsABggaTM2ZpNIGuKg=
 golang.org/x/mod v0.36.0 h1:JJjpVx6myfUsUdAzZuOSTTmRE0PfZeNWzzvKrP7amb4=
 golang.org/x/mod v0.36.0/go.mod h1:moc6ELqsWcOw5Ef3xVprK5ul/MvtVvkIXLziUOICjUQ=
 golang.org/x/mod v0.37.0 h1:vF1DjpVEshcIqoEaauuHebaLk1O1forxjxBaVn884JQ=
