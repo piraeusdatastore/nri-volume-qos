@@ -16,6 +16,8 @@ github.com/containerd/nri v0.12.2 h1:piA7h2QUm0m3+e994qWFPYwnoXXwAphwDc1Ydx1eWi4
 github.com/containerd/nri v0.12.2/go.mod h1:o6Pz0I/iks9g2KlH3WdgvFtc9rB7k0aeoZCAH01xOGk=
 github.com/containerd/nri v0.12.3 h1:pVZwZCe0Z+d2WmScp51VTO3OmeuOZFoDGInX2n04e70=
 github.com/containerd/nri v0.12.3/go.mod h1:MrNpHL2YtNnf09t+D6NacWeN1kaHmy/YCm0+w4VHKL0=
+github.com/containerd/nri v0.12.5 h1:sPYUCT4fRbshF0ewiIaFXv2n6+tLIwY0kKII9ycMszY=
+github.com/containerd/nri v0.12.5/go.mod h1:KPI0bbRZeqYq4rRWNWQztAR1150JF937MGe5b45Zgrk=
 github.com/containerd/ttrpc v1.2.8 h1:xbVu6D4qF2jihdh9rDVOKqUMiFBQk6YctTdo1zk087Y=
 github.com/containerd/ttrpc v1.2.8/go.mod h1:wyZW2K79t4Hfcxl+GUvkZqRBzJlqFFvgEeeWXa42tyE=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
