@@ -6,10 +6,10 @@ require (
 	github.com/containerd/nri v0.12.5
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/sys v0.49.0
-	k8s.io/api v0.37.1
-	k8s.io/apimachinery v0.37.1
-	k8s.io/client-go v0.37.1
-	k8s.io/component-base v0.37.1
+	k8s.io/api v0.37.2
+	k8s.io/apimachinery v0.37.2
+	k8s.io/client-go v0.37.2
+	k8s.io/component-base v0.37.2
 	k8s.io/klog/v2 v2.140.0
 )
 
